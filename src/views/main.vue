@@ -1,13 +1,11 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <router-view />
-  </q-layout>
+  <div>main</div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-  name: 'App',
+  name: 'Main'
 })
 </script>
