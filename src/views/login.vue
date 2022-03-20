@@ -64,10 +64,11 @@ export default defineComponent({
       try {
         isLoading.value = true;
         await loginUser(authData.login, authData.password);
+        $router.push({ name: 'Main' });
       } catch (e) {
         $q.notify({
           type: 'negative',
-          message: e as string
+          message: 'Incorrect login or password'
         })
       } finally {
         isLoading.value = false;
