@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { Quasar, Dialog, Notify } from 'quasar';
+import { Quasar, Dialog, Notify, useQuasar } from 'quasar';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -16,3 +16,5 @@ app.use(Quasar, {
 app.use(store);
 app.use(router);
 app.mount('#app');
+
+export const $quasar = useQuasar();

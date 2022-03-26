@@ -45,18 +45,16 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
 import { loginUser } from '@/api/user.api';
-import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'Login',
   setup() {
-    const $q = useQuasar();
     const $router = useRouter();
     const authData = reactive({
       login: '',
       password: ''
-    })
+    });
 
     const isLoading = ref(false);
 
@@ -65,32 +63,27 @@ export default defineComponent({
         isLoading.value = true;
         await loginUser(authData.login, authData.password);
         $router.push({ name: 'Main' });
-      } catch (e) {
-        $q.notify({
-          type: 'negative',
-          message: 'Incorrect login or password'
-        })
       } finally {
         isLoading.value = false;
       }
-    }
+    };
 
     const goToRegister = (): void => {
-      $router.push({name: 'Register'});
-    }
+      $router.push({ name: 'Register' });
+    };
 
     return {
       authData,
       isLoading,
       goToRegister,
       authorize
-    }
+    };
   }
-})
+});
 </script>
 
 <style lang="scss">
 .login {
-  height: 100vh!important;
+  height: 100vh !important;
 }
 </style>

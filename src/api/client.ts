@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import qs from 'qs';
 import router from '@/router';
 import { cookies } from '@/utils/cookies.util';
+import errorNotify from '@/utils/notificator.util';
 
 const axiosConfigs: AxiosRequestConfig = {
   timeout: 600000,
@@ -13,7 +14,7 @@ const axiosConfigs: AxiosRequestConfig = {
 };
 
 const redirectToBasePage = (): void => {
-  router?.push('/');
+  router?.push({ name: 'Login' });
 };
 
 const handleError = (error: AxiosError): void => {
@@ -28,6 +29,7 @@ const handleError = (error: AxiosError): void => {
       }
       break;
     default:
+      errorNotify(error.response?.data);
       break;
   }
   throw error;
@@ -54,7 +56,7 @@ client.interceptors.request.use((config: AxiosRequestConfig) => {
     return {
       ...config,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token,
       },
     };
   }

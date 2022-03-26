@@ -50,13 +50,11 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
 import { registerUser } from '@/api/user.api';
-import { useQuasar } from 'quasar';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'Register',
   setup() {
-    const $q = useQuasar();
     const $router = useRouter();
     const registerData = reactive({
       login: '',
@@ -71,11 +69,6 @@ export default defineComponent({
         isLoading.value = true;
         await registerUser(registerData);
         $router.push({ name: 'Main' });
-      } catch (e) {
-        $q.notify({
-          type: 'negative',
-          message: e as string
-        });
       } finally {
         isLoading.value = false;
       }
