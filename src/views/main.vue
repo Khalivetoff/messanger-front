@@ -16,7 +16,7 @@ export default defineComponent({
   name: 'Main',
   setup() {
     const onClick = async (): Promise<void> => {
-      console.log((await client.get('/test/test')).data);
+      (await client.get('/test/test')).data
     }
 
     return {

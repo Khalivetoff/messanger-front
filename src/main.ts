@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { Quasar, Dialog, Notify, useQuasar } from 'quasar';
+import { Quasar, Dialog, Notify, Loading, useQuasar } from 'quasar';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -10,11 +10,10 @@ const app = createApp(App);
 app.use(Quasar, {
   plugins: {
     Dialog,
-    Notify
+    Notify,
+    Loading
   }
 });
 app.use(store);
 app.use(router);
 app.mount('#app');
-
-export const $quasar = useQuasar();

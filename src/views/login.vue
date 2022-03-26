@@ -46,11 +46,14 @@
 import { defineComponent, reactive, ref } from 'vue';
 import { loginUser } from '@/api/user.api';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'Login',
   setup() {
     const $router = useRouter();
+    const $store = useStore();
+
     const authData = reactive({
       login: '',
       password: ''
@@ -61,7 +64,7 @@ export default defineComponent({
     const authorize = async (): Promise<void> => {
       try {
         isLoading.value = true;
-        await loginUser(authData.login, authData.password);
+        $store.commit('userModule/setUserData', await loginUser(authData.login, authData.password));
         $router.push({ name: 'Main' });
       } finally {
         isLoading.value = false;

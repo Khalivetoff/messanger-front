@@ -1,8 +1,8 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import qs from 'qs';
-import router from '@/router';
 import { cookies } from '@/utils/cookies.util';
 import errorNotify from '@/utils/notificator.util';
+import { redirectToLoginPage } from '@/utils/router';
 
 const axiosConfigs: AxiosRequestConfig = {
   timeout: 600000,
@@ -13,19 +13,15 @@ const axiosConfigs: AxiosRequestConfig = {
   }),
 };
 
-const redirectToBasePage = (): void => {
-  router?.push({ name: 'Login' });
-};
-
 const handleError = (error: AxiosError): void => {
   switch (error?.response?.status) {
     case 401:
     case 404:
-      redirectToBasePage();
+      redirectToLoginPage();
       break;
     case 403:
       if (error?.config?.method?.toUpperCase() === 'GET') {
-        redirectToBasePage();
+        redirectToLoginPage();
       }
       break;
     default:
