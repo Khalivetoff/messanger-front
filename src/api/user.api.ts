@@ -14,6 +14,10 @@ export const loginUser = async (login: string, password: string): Promise<IUserP
   }))?.data
 );
 
+export const logoutUser = async (): Promise<void> => {
+  await client.get('/user/logout');
+}
+
 export const getUserData = async (): Promise<IUserPublic> => (
   (await client.get('/user'))?.data
 )

@@ -17,7 +17,6 @@ const handleError = (error: AxiosError): void => {
   switch (error?.response?.status) {
     case 401:
     case 404:
-      redirectToLoginPage();
       break;
     case 403:
       if (error?.config?.method?.toUpperCase() === 'GET') {

@@ -1,11 +1,13 @@
 <template>
-  <div class="messenger">messenger</div>
+  <div class="messenger">
+    messenger
+  </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import {defineComponent} from 'vue';
 
 export default defineComponent({
-  name: 'Messenger',
+  name: 'Messenger'
 })
 </script>
