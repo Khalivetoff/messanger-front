@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import { Quasar, Dialog, Notify, Loading, useQuasar } from 'quasar';
+import { Quasar, Dialog, Notify, Loading } from 'quasar';
 import App from './App.vue';
 import router from './router';
 import store from './store';

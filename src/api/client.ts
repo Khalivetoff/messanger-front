@@ -1,8 +1,8 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import qs from 'qs';
-import { cookies } from '@/utils/cookies.util';
+import {cookies} from '@/utils/cookies.util';
 import errorNotify from '@/utils/notificator.util';
-import { redirectToLoginPage } from '@/utils/router';
+import {redirectToLoginPage} from '@/utils/router';
 
 const axiosConfigs: AxiosRequestConfig = {
   timeout: 600000,
@@ -44,7 +44,7 @@ client.interceptors.request.use((config: AxiosRequestConfig) => {
   const isAuthInterceptorEnabled = JSON.parse('true');
 
   if (isAuthInterceptorEnabled) {
-    token = cookies.getCookie('token');
+    token = cookies.getCookie(process.env.VUE_APP_TOKEN_NAME);
   }
 
   if (token && config.headers) {

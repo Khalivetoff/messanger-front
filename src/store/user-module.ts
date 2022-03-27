@@ -7,10 +7,10 @@ export default {
     userData: undefined
   }),
   mutations: {
-    setUserData(state: IUserModule, payload: IUserPublic) {
+    setUserData(state: IUserModule, payload: IUserPublic): void {
       state.userData = payload;
     },
-    clearUserData(state: IUserModule) {
+    clearUserData(state: IUserModule): void {
       state.userData = undefined;
     }
   },

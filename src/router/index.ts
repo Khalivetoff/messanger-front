@@ -28,7 +28,7 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
+router.beforeEach((to) => {
   if (['/login', '/register'].includes(to.path) && store.getters['userModule/userData']) {
     return { name: 'Main' };
   }

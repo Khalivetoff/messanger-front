@@ -10,6 +10,7 @@ import { useStore } from 'vuex';
 import { getUserData } from '@/api/user.api';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
+import '@/api/messenger.api';
 
 export default defineComponent({
   name: 'App',
