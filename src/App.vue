@@ -1,5 +1,8 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout
+    view="lHh Lpr lFf"
+    class="flex column"
+  >
     <router-view v-if="isAppReady" />
   </q-layout>
 </template>

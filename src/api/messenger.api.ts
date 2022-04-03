@@ -1,15 +1,14 @@
 import io from 'socket.io-client';
 import {cookies} from "@/utils/cookies.util";
-import {ESocketEvents, IMessage} from "@/models/socket";
+import {ESocketEvents, ISocketWrapper} from "@/models/socket";
 import store from "@/store";
+
+let queue = 0;
+export const getQueue = (): number => (queue++);
 
 export const socket = io(`ws://localhost:3000`, {
   reconnectionDelayMax: 10000,
   autoConnect: false,
-  auth: {
-    token: cookies.getCookie(process.env.VUE_APP_TOKEN_NAME),
-    login: store.getters["userModule/userData"]?.login
-  },
   withCredentials: true,
   extraHeaders: {
     "my-custom-header": "abcd"
@@ -17,17 +16,17 @@ export const socket = io(`ws://localhost:3000`, {
 });
 
 socket.on('connection', () => {
-  // socket.on(ESocketEvents.GetMessage, (data: ) => {
+  // socket.on(ESocketEvents.Init, (data: ) => {
   //
   // })
 })
 
-export const sendMessage = async (recipientLogin: string, text: string): Promise<void> => {
-  const data: IMessage = {
-    text,
-    recipientLogin
-  }
-  socket.emit(ESocketEvents.GetMessage, data);
+export const sendMessageToCompanion = async (companionLogin: string, text: string): Promise<void> => {
+  socket.emit(ESocketEvents.AddMessageInNewDialog, {queue: getQueue(), data: {companionLogin, text}} as ISocketWrapper);
+}
+
+export const sendMessageToDialog = async (dialogId: string, text: string): Promise<void> => {
+  socket.emit(ESocketEvents.AddMessageInDialog, {queue: getQueue(), data: {text, dialogId}} as ISocketWrapper);
 }
 
 const initSocket = (): void => {

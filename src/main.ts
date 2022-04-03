@@ -5,6 +5,7 @@ import router from './router';
 import store from './store';
 import './styles/quasar.scss';
 import '@quasar/extras/material-icons/material-icons.css';
+import './styles/default.scss';
 
 const app = createApp(App);
 app.use(Quasar, {
