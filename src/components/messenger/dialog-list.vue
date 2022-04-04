@@ -4,7 +4,7 @@
       v-for="(dialog, index) in dialogList"
       :key="index"
       v-ripple
-      :data="dialog"
+      :dialog="dialog"
       class="relative-position"
       :class="{'dialog-list-item--active': isActiveDialog(dialog)}"
       @click="selectDialog(index)"
@@ -26,7 +26,8 @@ export default defineComponent({
       default: () => ([])
     },
     activeDialog: {
-      type: Object as PropType<IDialog>
+      type: Object as PropType<IDialog>,
+      default: undefined
     }
   },
   emits: ['onSelectDialog'],

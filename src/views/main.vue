@@ -1,21 +1,20 @@
 <template>
-  <q-header
-    bordered
-    class="bg-white text-primary flex wrap justify-center items-center header"
-  >
-    <span class="header__user-name">{{ userData?.name }}</span>
-    <q-btn
-      round
-      flat
-      class="absolute header__exit-btn"
-      @click="exit"
-    >
-      <q-icon name="logout" />
-    </q-btn>
-  </q-header>
-  <q-page-container class="flex column">
-    <messenger />
-  </q-page-container>
+  <div class="main-wrapper flex column no-wrap overflow-hidden">
+    <div class="main flex column no-wrap overflow-hidden shadow-2">
+      <div class="bg-white relative-position text-primary flex wrap justify-center items-center header">
+        <span class="header__user-name">{{ userData?.name }}</span>
+        <q-btn
+          round
+          flat
+          class="absolute header__exit-btn"
+          @click="exit"
+        >
+          <q-icon name="logout" />
+        </q-btn>
+      </div>
+      <messenger />
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -53,20 +52,34 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.header {
-  padding: 10px;
+.main-wrapper {
+  flex: 1;
+  background-color: #f7f7f7;
 
-  .header__user-name {
-    font-size: 18px;
+  .main {
+    flex: 1;
+    width: 969px;
+    max-width: 100vw;
+    margin: 0px auto;
+    background-color: #ffffff;
+
+    .header {
+      padding: 10px;
+      flex: 0;
+      border-bottom: solid 1px #d9d9d9;
+
+      .header__user-name {
+        font-size: 18px;
+      }
+
+      .header__exit-btn {
+        right: 6px;
+      }
+    }
+
+    .messenger {
+      flex: 1
+    }
   }
-
-  .header__exit-btn {
-    right: 6px;
-  }
-}
-
-.q-page-container {
-  flex-grow: 1;
-  flex-shrink: 0;
 }
 </style>

@@ -1,19 +1,22 @@
 <template>
-  <div class="messenger flex row items-start">
+  <div class="messenger overflow-hidden no-wrap flex row items-start">
     <dialog-list
-      class="col-xs-6 col-sm-5 col-md-4 col-lg-3 col-xl-2"
       :dialog-list="dialogList"
       :active-dialog="activeDialog"
       @on-select-dialog="onSelectDialog"
     />
-    <messenger-work-area :dialog="activeDialog" />
+    <messenger-work-area
+      :dialog="activeDialog"
+      @close-dialog="deselectDialog"
+      @load-messages="loadMessages"
+    />
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent, onBeforeMount, ref} from 'vue';
 import initSocket, {
-  sendMessageToCompanion,
+  // sendMessageToCompanion,
   sendMessageToDialog,
   socket
 } from "@/api/messenger.api";
@@ -38,11 +41,17 @@ export default defineComponent({
     const userList = ref<IUserPublic[]>([]);
     const dialogList = ref<IDialog[]>([]);
     const activeDialog = ref<IDialog | undefined>();
+    const isAllMessagesInCurrentDialog = ref(false);
 
-    const init = (data: {userList: IUserPublic[], dialogList: ISourceDialog[]}): void => {
+    const init = (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }): void => {
       userList.value = data.userList;
       dialogList.value = data.userList.map(({login, name}) => {
-        const dialog = data.dialogList.find(({participantLoginList, isGroup}) => participantLoginList.includes(login) && !isGroup);
+        const dialog = data.dialogList.find((
+          {
+            participantLoginList,
+            isGroup
+          }
+        ) => participantLoginList.includes(login) && !isGroup);
         return {
           _id: dialog?._id,
           login,
@@ -59,7 +68,11 @@ export default defineComponent({
 
     const deselectDialog = () => activeDialog.value = undefined;
 
-    socket.on(ESocketEvents.Init, (data: {userList: IUserPublic[], dialogList: ISourceDialog[]}) => {
+    const loadMessages = async (): Promise<void> => {
+      // !isAllMessagesInCurrentDialog.value &&
+    }
+
+    socket.on(ESocketEvents.Init, (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }) => {
       init(data);
     })
 
@@ -73,7 +86,8 @@ export default defineComponent({
       activeDialog,
       deselectDialog,
       onSendMessage,
-      onSelectDialog
+      onSelectDialog,
+      loadMessages
     }
   }
 })
@@ -81,7 +95,10 @@ export default defineComponent({
 
 <style lang="scss">
 .messenger {
-  flex-grow: 1;
+
+  .dialog-list {
+    width: 30%;
+  }
 
   .messenger-work-area {
     flex-grow: 1;

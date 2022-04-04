@@ -1,6 +1,14 @@
 <template>
-  <div class="messenger-work-area-title full-width">
+  <div class="messenger-work-area-title flex row full-width">
     <span class="messenger-work-area-title__name">{{ dialog?.name }}</span>
+    <q-space />
+    <q-btn
+      size="xs"
+      round
+      @click="closeDialog"
+    >
+      <q-icon name="clear" />
+    </q-btn>
   </div>
 </template>
 
@@ -12,7 +20,16 @@ export default defineComponent({
   name: 'MessengerWorkAreaTitle',
   props: {
     dialog: {
-      type: Object as PropType<IDialog>
+      type: Object as PropType<IDialog>,
+      default: undefined
+    }
+  },
+  emits: ['closeDialog'],
+  setup(props, {emit}) {
+    const closeDialog = () => emit('closeDialog');
+
+    return {
+      closeDialog
     }
   }
 })

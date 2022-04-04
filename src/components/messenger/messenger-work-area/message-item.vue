@@ -16,7 +16,8 @@ export default defineComponent({
   name: 'Message',
   props: {
     message: {
-      type: Object as PropType<Message>
+      type: Object as PropType<Message>,
+      default: undefined
     }
   },
   setup(props) {

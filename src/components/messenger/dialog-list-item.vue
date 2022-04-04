@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-list-item full-width column">
     <span class="dialog-list-item__title">
-      {{ data.name }}
+      {{ dialog.name }}
     </span>
     <span
       v-if="lastMessage"
@@ -20,12 +20,12 @@ import Message from "@/models/message.util";
 export default defineComponent({
   name: 'DialogListItem',
   props: {
-    data: {
+    dialog: {
       type: Object as PropType<IDialog>
     }
   },
   setup(props) {
-    const lastMessage = computed<Message | undefined>(() => props.data?.messageList?.[props.data?.messageList.length - 1]);
+    const lastMessage = computed<Message | undefined>(() => props.dialog?.messageList?.[props.dialog?.messageList.length - 1]);
 
     return {
       lastMessage
@@ -40,7 +40,7 @@ export default defineComponent({
   cursor: pointer;
 
   &--active {
-    background-color: #e8e8e8;
+    background-color: #f5f5f5;
   }
 
   &__title {

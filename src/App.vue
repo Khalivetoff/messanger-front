@@ -1,7 +1,7 @@
 <template>
   <q-layout
     view="lHh Lpr lFf"
-    class="flex column"
+    class="flex column main-wrapper"
   >
     <router-view v-if="isAppReady" />
   </q-layout>
@@ -46,3 +46,11 @@ export default defineComponent({
   }
 });
 </script>
+
+<style lang="scss">
+.main-wrapper {
+  max-height: 100vh;
+  overflow: hidden;
+  flex-wrap: nowrap!important;
+}
+</style>
