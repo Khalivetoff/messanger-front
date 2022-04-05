@@ -10,7 +10,7 @@
         :dialog="dialog"
         @load-messages="loadMessages"
       />
-      <messenger-editor />
+      <messenger-editor @send-message="sendMessage" />
     </template>
     <span
       v-else
@@ -38,18 +38,27 @@ export default defineComponent({
       default: undefined
     }
   },
-  emits: ['closeDialog', 'loadMessages'],
+  emits: ['closeDialog', 'loadMessages', 'sendMessage'],
   setup(props, {emit}) {
     const title = computed(() => props.dialog?.name);
 
-    const closeDialog = () => emit('closeDialog');
+    const closeDialog = (): void => {
+      emit('closeDialog');
+    }
 
-    const loadMessages = () => emit('loadMessages');
+    const loadMessages = (): void=> {
+      emit('loadMessages');
+    }
+
+    const sendMessage = (messageText: string): void => {
+      emit('sendMessage', messageText);
+    }
 
     return {
       title,
       loadMessages,
-      closeDialog
+      closeDialog,
+      sendMessage
     }
   }
 })

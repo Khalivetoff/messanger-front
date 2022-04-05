@@ -9,6 +9,7 @@
       :dialog="activeDialog"
       @close-dialog="deselectDialog"
       @load-messages="loadMessages"
+      @send-message="sendMessage"
     />
   </div>
 </template>
@@ -41,7 +42,6 @@ export default defineComponent({
     const userList = ref<IUserPublic[]>([]);
     const dialogList = ref<IDialog[]>([]);
     const activeDialog = ref<IDialog | undefined>();
-    const isAllMessagesInCurrentDialog = ref(false);
 
     const init = (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }): void => {
       userList.value = data.userList;
@@ -68,8 +68,15 @@ export default defineComponent({
 
     const deselectDialog = () => activeDialog.value = undefined;
 
+    //FIXME: реализовать загрузку загрузку сообщений по кускам
+    // const isAllMessagesInCurrentDialog = ref(false);
+
     const loadMessages = async (): Promise<void> => {
       // !isAllMessagesInCurrentDialog.value &&
+    }
+
+    const sendMessage = async (messageText: string): Promise<void> => {
+      console.log('sendMessage()', messageText);
     }
 
     socket.on(ESocketEvents.Init, (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }) => {
@@ -84,6 +91,7 @@ export default defineComponent({
       dialogList,
       userList,
       activeDialog,
+      sendMessage,
       deselectDialog,
       onSendMessage,
       onSelectDialog,

@@ -3,12 +3,12 @@
     view="lHh Lpr lFf"
     class="flex column main-wrapper"
   >
-    <router-view v-if="isAppReady" />
+    <router-view v-if="!!isAppReady" />
   </q-layout>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount } from 'vue';
+import {computed, defineComponent, onBeforeMount} from 'vue';
 import { useStore } from 'vuex';
 import { getUserData } from '@/api/user.api';
 import { useRoute, useRouter } from 'vue-router';
@@ -29,9 +29,9 @@ export default defineComponent({
         await $router.isReady();
         const user = await getUserData();
         user && $store.commit('userModule/setUserData', user);
-        $router.push({ name: 'Main' });
+        await $router.push({ name: 'Main' });
       } catch (e) {
-        $route.name !== 'Register' && $router.push({ name: 'Login' });
+        $route.name !== 'Register' && await $router.push({ name: 'Login' });
       } finally {
         $store.commit('setIsDataLoaded');
         $quasar.loading.hide();
