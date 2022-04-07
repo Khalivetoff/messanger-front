@@ -1,7 +1,7 @@
 <template>
   <div
     ref="messagesWrapperRef"
-    class="messages-wrapper relative-position no-wrap overflow-auto column"
+    class="messages-wrapper relative-position no-wrap overflow-auto column items-start"
   >
     <load-messages-detector @on-trigger="loadMessages" />
     <message-item
@@ -14,7 +14,7 @@
 
 <script lang="ts">
 import {computed, defineComponent, nextTick, onMounted, PropType, shallowRef, watch} from "vue";
-import Message from "@/models/message.util";
+import {IMessage} from "@/models/message";
 import MessageItem from "@/components/messenger/messenger-work-area/message-item.vue";
 import {IDialog} from "@/models/messenger";
 import {useStore} from "vuex";
@@ -26,7 +26,7 @@ export default defineComponent({
   components: {LoadMessagesDetector, MessageItem},
   props: {
     messageList: {
-      type: Array as PropType<(Message & {_id: string})[]>,
+      type: Array as PropType<(IMessage & {_id: string})[]>,
       default: () => ([])
     },
     dialog: {
@@ -47,7 +47,7 @@ export default defineComponent({
       }
     )
 
-    const lastMessageByCurrentUser = computed<Message & {_id: string} | undefined>(() => (
+    const lastMessageByCurrentUser = computed<IMessage & {_id: string} | undefined>(() => (
       props.messageList?.find(({senderLogin}) => senderLogin === $store.getters['userModule/userData'].login)
     ));
 

@@ -15,17 +15,18 @@
 <script lang="ts">
 import {computed, defineComponent, PropType} from "vue";
 import {IDialog} from "../../models/messenger";
-import Message from "@/models/message.util";
+import {IMessage} from "@/models/message";
 
 export default defineComponent({
   name: 'DialogListItem',
   props: {
     dialog: {
-      type: Object as PropType<IDialog>
+      type: Object as PropType<IDialog>,
+      default: undefined
     }
   },
   setup(props) {
-    const lastMessage = computed<Message | undefined>(() => props.dialog?.messageList?.[props.dialog?.messageList.length - 1]);
+    const lastMessage = computed<IMessage | undefined>(() => props.dialog?.messageList?.[props.dialog?.messageList.length - 1]);
 
     return {
       lastMessage

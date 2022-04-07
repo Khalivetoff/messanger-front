@@ -9,14 +9,14 @@
 
 <script lang="ts">
 import {defineComponent, PropType} from "vue";
-import Message from "../../../models/message.util";
+import {IMessage} from "../../../models/message";
 import {useStore} from "vuex";
 
 export default defineComponent({
   name: 'Message',
   props: {
     message: {
-      type: Object as PropType<Message>,
+      type: Object as PropType<IMessage>,
       default: undefined
     }
   },
