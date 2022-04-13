@@ -1,5 +1,5 @@
 <template>
-  <div class="dialog-list flex column">
+  <div class="dialog-list flex column no-wrap overflow-auto">
     <dialog-list-item
       v-for="(dialog, index) in dialogList"
       :key="index"
@@ -21,21 +21,15 @@ export default defineComponent({
   name: 'DialogList',
   components: {DialogListItem},
   props: {
-    dialogList: {
-      type: Array as PropType<IDialog[]>,
-      default: () => ([])
-    },
-    activeDialog: {
-      type: Object as PropType<IDialog>,
-      default: undefined
-    }
+    dialogList: {type: Array as PropType<IDialog[]>, default: () => ([])},
+    activeDialog: {type: Object as PropType<IDialog>, default: undefined}
   },
   emits: ['onSelectDialog'],
   setup(props, {emit}) {
     const selectDialog = (index: number) => emit('onSelectDialog', index);
 
     const isActiveDialog = ({_id, login}: IDialog): boolean => {
-      return !!props.activeDialog && (_id === props.activeDialog?._id || login === props.activeDialog?.login)
+      return !!props.activeDialog && ((props.activeDialog?._id && _id === props.activeDialog?._id) || login === props.activeDialog?.login)
     }
 
     return {
@@ -48,9 +42,7 @@ export default defineComponent({
 
 <style lang="scss">
 .dialog-list {
-  border-bottom: solid 1px #d9d9d9;
-
-  &-item:not(:last-child) {
+  &-item {
     border-bottom: solid 1px #d9d9d9;
   }
 }

@@ -1,29 +1,33 @@
 <template>
-  <div class="messenger-work-area flex column self-stretch">
-    <template v-if="dialog">
+  <div class="messenger-work-area flex column">
+    <template v-if="activeDialog">
       <messenger-work-area-title
-        :dialog="dialog"
+        :active-dialog="activeDialog"
         @close-dialog="closeDialog"
       />
       <messages-wrapper
-        :message-list="dialog?.messageList || []"
-        :dialog="dialog"
-        @load-messages="loadMessages"
+        :message-list="activeDialog?.messageList || []"
+        :active-dialog="activeDialog"
+        @load-messages="loadMessageList"
       />
-      <messenger-editor @send-message="sendMessage" />
+      <messenger-editor
+        v-model="internalMessageText"
+        :active-dialog="activeDialog"
+        @send-message="sendMessage"
+      />
     </template>
     <span
       v-else
       class="no-data-info"
     >
-      Pick the companion and just the chatting
+      Выбери собеседника и начни общаться
     </span>
   </div>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, PropType} from "vue";
-import {IDialog} from "../../../models/messenger";
+import {IDialog} from "@/models/messenger";
 import MessengerWorkAreaTitle
   from "@/components/messenger/messenger-work-area/messenger-work-area-title.vue";
 import MessagesWrapper from "@/components/messenger/messenger-work-area/messages-wrapper.vue";
@@ -33,20 +37,27 @@ export default defineComponent({
   name: 'MessengerWorkArea',
   components: {MessengerEditor, MessagesWrapper, MessengerWorkAreaTitle},
   props: {
-    dialog: {
-      type: Object as PropType<IDialog>,
-      default: undefined
-    }
+    activeDialog: {type: Object as PropType<IDialog>, default: undefined},
+    messageText: {type: String as PropType<string>, default: ''}
   },
-  emits: ['closeDialog', 'loadMessages', 'sendMessage'],
+  emits: ['closeDialog', 'loadMessages', 'sendMessage', 'update:messageText'],
   setup(props, {emit}) {
-    const title = computed(() => props.dialog?.name);
+    const title = computed(() => props.activeDialog?.name);
+
+    const internalMessageText = computed({
+      get() {
+        return props.messageText;
+      },
+      set(val: string) {
+        emit('update:messageText', val);
+      }
+    })
 
     const closeDialog = (): void => {
       emit('closeDialog');
     }
 
-    const loadMessages = (): void=> {
+    const loadMessageList = (): void => {
       emit('loadMessages');
     }
 
@@ -56,7 +67,8 @@ export default defineComponent({
 
     return {
       title,
-      loadMessages,
+      internalMessageText,
+      loadMessageList,
       closeDialog,
       sendMessage
     }

@@ -1,6 +1,6 @@
 <template>
   <div
-    ref="loadMessagesDetector"
+    ref="loadMessageListDetector"
     class="load-messages-detector"
   />
 </template>
@@ -10,25 +10,25 @@ import {defineComponent, onBeforeUnmount, onMounted, shallowRef} from "vue";
 import observer from "@/utils/observer.util";
 
 export default defineComponent({
-  name: 'LoadMessagesDetector',
+  name: 'LoadMessageListDetector',
   emits: ['onTrigger'],
   setup(props, {emit}) {
-    const loadMessagesDetector = shallowRef<Element>();
+    const loadMessageListDetector = shallowRef<Element>();
 
     const onObserveTrigger = (): void => {
       emit('onTrigger');
     }
 
     onMounted(() => {
-      observer.addTarget(loadMessagesDetector.value as Element, onObserveTrigger, undefined, false);
+      observer.addTarget(loadMessageListDetector.value as Element, onObserveTrigger, undefined, false);
     })
 
     onBeforeUnmount(() => {
-      observer.deleteTarget(loadMessagesDetector.value as Element);
+      observer.deleteTarget(loadMessageListDetector.value as Element);
     })
 
     return {
-      loadMessagesDetector
+      loadMessageListDetector
     }
   }
 })

@@ -2,7 +2,9 @@
   <div class="full-width full-height row flex justify-center items-center login">
     <q-card class="col-xs-12 col-sm-8 col-md-5 col-lg-4 col-xl-3">
       <q-card-section>
-        <div>Authorization</div>
+        <h4 class="no-margin">
+          Авторизация
+        </h4>
         <q-form
           greedy
           class="q-gutter-md"
@@ -11,18 +13,18 @@
         >
           <q-input
             v-model="authData.login"
-            label="Login"
+            label="Логин"
             :rules="[e => !!e || '']"
           />
           <q-input
             v-model="authData.password"
-            label="Password"
+            label="Пароль"
             type="password"
             :rules="[e => !!e || '']"
           />
           <div class="d-flex row justify-between">
             <q-btn
-              label="create account"
+              label="создать аккаунт"
               type="reset"
               size="small"
               color="primary"
@@ -65,7 +67,7 @@ export default defineComponent({
       try {
         isLoading.value = true;
         $store.commit('userModule/setUserData', await loginUser(authData.login, authData.password));
-        $router.push({ name: 'Main' });
+        await $router.push({ name: 'Main' });
       } finally {
         isLoading.value = false;
       }

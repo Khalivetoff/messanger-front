@@ -7,6 +7,7 @@ export interface IDialog {
   messageList: IMessage[];
   participantLoginList: string[];
   isGroup: boolean;
+  isAllMessagesReceived: boolean;
 }
 
 export interface ISourceDialog {
@@ -14,6 +15,7 @@ export interface ISourceDialog {
   participantLoginList: string[];
   messageList: IMessage[];
   isGroup: boolean;
+  isAllMessagesReceived: boolean;
 }
 
 

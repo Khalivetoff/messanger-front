@@ -3,9 +3,10 @@
     ref="messagesWrapperRef"
     class="messages-wrapper relative-position no-wrap overflow-auto column items-start"
   >
-    <load-messages-detector @on-trigger="loadMessages" />
+    <load-messages-detector @on-trigger="loadMessageList" />
     <message-item
-      v-for="message in messageList"
+      v-for="(message, index) in messageList"
+      :ref="(el) => messagesRefs[index] = el?.$el"
       :key="message._id"
       :message="message"
     />
@@ -20,35 +21,35 @@ import {IDialog} from "@/models/messenger";
 import {useStore} from "vuex";
 import LoadMessagesDetector
   from "@/components/messenger/messenger-work-area/load-messages-detector.vue";
+import {cloneDeep} from "lodash";
 
 export default defineComponent({
   name: 'MessagesWrapper',
   components: {LoadMessagesDetector, MessageItem},
   props: {
-    messageList: {
-      type: Array as PropType<(IMessage & {_id: string})[]>,
-      default: () => ([])
-    },
-    dialog: {
-      type: Object as PropType<IDialog>,
-      default: undefined
-    }
+    messageList: {type: Array as PropType<(IMessage & { _id: string })[]>, default: () => ([])},
+    activeDialog: {type: Object as PropType<IDialog>, default: undefined}
   },
   emits: ['loadMessages'],
   setup(props, {emit}) {
     const $store = useStore();
     const messagesWrapperRef = shallowRef<HTMLElement>();
+    const messagesRefs = shallowRef<HTMLElement[]>([]);
 
     watch(
-      () => props.dialog,
-      () => scrollToLastMessage(),
-      {
-        deep: true
+      () => props.activeDialog,
+      () => scrollToLastMessage()
+    )
+
+    watch(
+      () => props.messageList[0]?._id,
+      () => {
+        messagesRefs.value[0]?.scrollIntoView({block: 'start'});
       }
     )
 
-    const lastMessageByCurrentUser = computed<IMessage & {_id: string} | undefined>(() => (
-      props.messageList?.find(({senderLogin}) => senderLogin === $store.getters['userModule/userData'].login)
+    const lastMessageByCurrentUser = computed<IMessage & { _id: string } | undefined>(() => (
+      (cloneDeep(props.messageList) as (IMessage & { _id: string })[] | undefined)?.reverse().find(({senderLogin}) => senderLogin === $store.getters['userModule/userData']?.login)
     ));
 
     watch(
@@ -61,7 +62,7 @@ export default defineComponent({
       messagesWrapperRef.value?.scroll({top: messagesWrapperRef.value?.scrollHeight});
     }
 
-    const loadMessages = () => emit('loadMessages');
+    const loadMessageList = () => emit('loadMessages');
 
     onMounted(() => {
       scrollToLastMessage();
@@ -70,7 +71,8 @@ export default defineComponent({
     return {
       lastMessageByCurrentUser,
       messagesWrapperRef,
-      loadMessages
+      messagesRefs,
+      loadMessageList
     }
   }
 })
@@ -78,16 +80,21 @@ export default defineComponent({
 
 <style lang="scss">
 .messages-wrapper {
-  padding: 12px;
+  padding: 8px 12px;
+  overflow-y: scroll!important;
 
   .load-messages-detector {
     width: 100%;
     position: absolute;
-    top: 0;
+    top: 12px;
   }
 
   .message--by-current-user {
     align-self: end;
+  }
+
+  .message {
+    max-width: 85%;
   }
 }
 </style>

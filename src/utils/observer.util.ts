@@ -1,5 +1,5 @@
 class Observer {
-  private targets: Map<Element, { action: () => any; context: any, once: boolean }>;
+  private targets: Map<Element, { action: () => unknown; context: unknown, once: boolean }>;
   private observer: IntersectionObserver;
 
   public constructor() {
@@ -7,7 +7,7 @@ class Observer {
     this.observer = new IntersectionObserver(this.trigger.bind(this));
   }
 
-  private trigger(actions: any) {
+  private trigger(actions: IntersectionObserverEntry[]) {
     actions.forEach((a: IntersectionObserverEntry) => {
       if (a.isIntersecting) {
         const target = this.targets.get(a.target);
@@ -20,7 +20,7 @@ class Observer {
     })
   }
 
-  public addTarget(target: Element, action: () => any, context?: any, once = true) {
+  public addTarget(target: Element, action: () => unknown, context?: unknown, once = true) {
     this.targets.set(target, {
       action,
       context,

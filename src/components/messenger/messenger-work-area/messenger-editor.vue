@@ -2,8 +2,8 @@
   <div class="messenger-editor flex row items-center">
     <textarea
       ref="textareaRef"
-      v-model="messageText"
-      placeholder="Enter message"
+      v-model="internalMessageText"
+      placeholder="Введи сообщение"
       @keydown.enter.exact.prevent="sendMessage"
     />
     <q-btn
@@ -17,27 +17,48 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, shallowRef} from "vue";
+import {computed, defineComponent, onMounted, PropType, shallowRef, watch} from "vue";
+import {IDialog} from "@/models/messenger";
 
 export default defineComponent({
   name: 'MessengerEditor',
-  emits: ['sendMessage'],
+  props: {
+    activeDialog: {type: Object as PropType<IDialog>, default: undefined},
+    modelValue: {type: String as PropType<string>, default: ''}
+  },
+  emits: ['update:modelValue', 'sendMessage'],
   setup(props, {emit}) {
-    const messageText = ref('');
     const textareaRef = shallowRef<HTMLElement>();
 
-    const clearMessageText = (): void => {
-      messageText.value = '';
-    }
+    const internalMessageText = computed({
+      get() {
+        return props.modelValue;
+      },
+      set(val: string) {
+        emit('update:modelValue', val);
+      }
+    })
+
+    watch(
+      () => props.activeDialog,
+      (val) => val && focusTextField()
+    )
 
     const sendMessage = (): void => {
-      emit('sendMessage', messageText.value);
-      clearMessageText();
+      internalMessageText.value.trim() && emit('sendMessage');
+      focusTextField();
+    }
+
+    const focusTextField = (): void => {
       textareaRef.value?.focus();
     }
 
+    onMounted(() => {
+      focusTextField();
+    })
+
     return {
-      messageText,
+      internalMessageText,
       textareaRef,
       sendMessage
     }

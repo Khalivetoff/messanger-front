@@ -1,6 +1,6 @@
 <template>
   <div class="messenger-work-area-title flex row full-width">
-    <span class="messenger-work-area-title__name">{{ dialog?.name }}</span>
+    <span class="messenger-work-area-title__name">{{ activeDialog?.name }}</span>
     <q-space />
     <q-btn
       size="xs"
@@ -19,7 +19,7 @@ import {IDialog} from "@/models/messenger";
 export default defineComponent({
   name: 'MessengerWorkAreaTitle',
   props: {
-    dialog: {
+    activeDialog: {
       type: Object as PropType<IDialog>,
       default: undefined
     }

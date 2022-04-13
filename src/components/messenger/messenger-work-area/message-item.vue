@@ -1,16 +1,18 @@
 <template>
   <div
-    class="message"
+    class="message column"
     :class="{'message--by-current-user': isCurrentUser}"
   >
     <span class="message__text">{{ message.text }}</span>
+    <span class="message__time">{{ parsedTime }}</span>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
-import {IMessage} from "../../../models/message";
+import {computed, defineComponent, PropType} from "vue";
+import {IMessage} from "@/models/message";
 import {useStore} from "vuex";
+import moment from "moment";
 
 export default defineComponent({
   name: 'Message',
@@ -24,8 +26,11 @@ export default defineComponent({
     const $store = useStore();
     const isCurrentUser = props.message?.senderLogin === $store.getters['userModule/userData'].login;
 
+    const parsedTime = computed(() => moment(props.message?.sendTime).locale('ru').format('lll'));
+
     return {
-      isCurrentUser
+      isCurrentUser,
+      parsedTime
     }
   }
 })
@@ -34,8 +39,9 @@ export default defineComponent({
 <style lang="scss">
 .message {
   border-radius: 8px;
-  padding: 8px;
+  padding: 12px 8px;
   background-color: #e5e5e5;
+  font-size: 14px;
 
   &--by-current-user {
     background-color: #d4d8ff;
@@ -43,6 +49,14 @@ export default defineComponent({
 
   &:not(:last-child) {
     margin-bottom: 8px;
+  }
+
+  .message__time {
+    right: 12px;
+    bottom: 12px;
+    font-size: 8px;
+    white-space: nowrap;
+    text-align: right;
   }
 }
 </style>

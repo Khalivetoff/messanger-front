@@ -1,5 +1,4 @@
 import {IMessage} from "@/models/message";
-import {IDialog} from "@/models/messenger";
 
 export enum ESocketEvents {
   Init = '2',
@@ -7,21 +6,32 @@ export enum ESocketEvents {
   AddMessageInNewDialog = '4',
   DialogCreate = '5',
   ForceDisconnect = '6',
-  GetMessages = '7',
+  GetMessageList = '7',
   Message = '8'
 }
 
-export interface IAddMessageInDialogDataSend {
+export interface IAddMessageInDialogRequest {
   dialogId: string;
   text: string;
 }
 
-export interface IAddMessageInNewDialogDataSend {
+export interface IAddMessageInNewDialogRequest {
   companionLogin: string;
   text: string;
 }
 
-export interface IAddMessageInDialogDataGet {
+export interface IAddMessageInNewDialogResponse {
   dialogId: string;
   message: IMessage;
+}
+
+export interface IGetMessageListRequest {
+  dialogId: string;
+  messageIndex: number;
+}
+
+export interface IGetMessageListResponse {
+  dialogId: string;
+  isAllMessagesReceived: boolean;
+  messageList: IMessage[];
 }

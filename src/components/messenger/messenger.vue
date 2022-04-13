@@ -1,14 +1,15 @@
 <template>
-  <div class="messenger overflow-hidden no-wrap flex row items-start">
+  <div class="messenger overflow-hidden no-wrap flex row">
     <dialog-list
       :dialog-list="dialogList"
       :active-dialog="activeDialog"
       @on-select-dialog="onSelectDialog"
     />
     <messenger-work-area
-      :dialog="activeDialog"
+      v-model:message-text="messageText"
+      :active-dialog="activeDialog"
       @close-dialog="deselectDialog"
-      @load-messages="loadMessages"
+      @load-messages="loadMessageList"
       @send-message="sendMessage"
     />
   </div>
@@ -20,9 +21,9 @@ import initSocket, {socket} from "@/api/messenger.api";
 import DialogList from '@/components/messenger/dialog-list.vue';
 import {
   ESocketEvents,
-  IAddMessageInDialogDataGet,
-  IAddMessageInDialogDataSend,
-  IAddMessageInNewDialogDataSend
+  IAddMessageInNewDialogResponse,
+  IAddMessageInDialogRequest,
+  IAddMessageInNewDialogRequest, IGetMessageListRequest, IGetMessageListResponse
 } from "@/models/socket";
 import {IDialog, ISourceDialog} from "@/models/messenger";
 import {IUserPublic} from "@/models/user";
@@ -35,14 +36,10 @@ export default defineComponent({
     DialogList
   },
   setup() {
-    const onSendMessage = () => {
-      // sendMessageToCompanion('login1', 'test');
-      sendMessageToDialog('6248481af374be7f91b734d8', 'test');
-    }
-
     const userList = ref<IUserPublic[]>([]);
     const dialogList = ref<IDialog[]>([]);
     const activeDialog = ref<IDialog | undefined>();
+    const messageText = ref<string>('');
 
     const init = (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }): void => {
       userList.value = data.userList;
@@ -59,51 +56,86 @@ export default defineComponent({
           name,
           messageList: dialog?.messageList || [],
           participantLoginList: dialog?.participantLoginList || [],
-          isGroup: dialog?.isGroup || false
+          isGroup: dialog?.isGroup || false,
+          isAllMessagesReceived: dialog ? dialog.isAllMessagesReceived : true
         }
       })
 
       socket.on(ESocketEvents.Message, onGetMessage);
       socket.on(ESocketEvents.DialogCreate, onCreateDialog);
+      socket.on(ESocketEvents.GetMessageList, onGetMessageList);
     }
 
     const onSelectDialog = (index: number): void => {
+      clearMessageText();
       activeDialog.value = dialogList.value[index];
     }
 
-    const deselectDialog = () => activeDialog.value = undefined;
-
-    //FIXME: реализовать загрузку загрузку сообщений по кускам
-    // const isAllMessagesInCurrentDialog = ref(false);
-
-    const loadMessages = async (): Promise<void> => {
-      // !isAllMessagesInCurrentDialog.value &&
+    const deselectDialog = () => {
+      clearMessageText();
+      activeDialog.value = undefined;
     }
 
-    const sendMessage = async (messageText: string): Promise<void> => {
-      if (activeDialog.value?._id) {
-        await sendMessageToDialog(activeDialog.value?._id as string, messageText);
+    const loadMessageList = async (): Promise<void> => {
+      if (!activeDialog.value || activeDialog.value?.isAllMessagesReceived) {
         return;
       }
-      await sendMessageToCompanion(activeDialog.value?.login as string, messageText);
+      !activeDialog.value?.isAllMessagesReceived && socket.emit(
+        ESocketEvents.GetMessageList,
+        {
+          dialogId: activeDialog.value?._id,
+          messageIndex: activeDialog.value?.messageList.length
+        } as IGetMessageListRequest);
+    }
+
+    const clearMessageText = (): void => {
+      messageText.value = '';
+    }
+
+    const sendMessage = async (): Promise<void> => {
+      if (activeDialog.value?._id) {
+        await sendMessageToDialog(activeDialog.value?._id as string, messageText.value);
+        return;
+      }
+      await sendMessageToCompanion(activeDialog.value?.login as string, messageText.value);
     }
 
     const sendMessageToCompanion = async (companionLogin: string, text: string): Promise<void> => {
       socket.emit(ESocketEvents.AddMessageInNewDialog, {
         companionLogin,
         text
-      } as IAddMessageInNewDialogDataSend);
+      } as IAddMessageInNewDialogRequest);
     }
 
     const sendMessageToDialog = async (dialogId: string, text: string): Promise<void> => {
       socket.emit(ESocketEvents.AddMessageInDialog, {
         dialogId,
         text
-      } as IAddMessageInDialogDataSend);
+      } as IAddMessageInDialogRequest);
     }
 
-    const onGetMessage = (data: IAddMessageInDialogDataGet): void => {
-      dialogList.value.find((dialog) => dialog._id === data.dialogId)?.messageList.push(data.message);
+    const isActiveDialog = (dialogId: string): boolean => activeDialog.value?._id === dialogId;
+
+    const getDialogById = (dialogId: string): IDialog | undefined => {
+      return dialogList.value.find((dialog) => dialog._id === dialogId)
+    }
+
+    const onGetMessage = (data: IAddMessageInNewDialogResponse): void => {
+      const dialog = getDialogById(data.dialogId);
+      if (!dialog) {
+        return;
+      }
+      dialog?.messageList.push(data.message);
+      isActiveDialog(dialog._id as string) && clearMessageText();
+    }
+
+    const onGetMessageList = (data: IGetMessageListResponse): void => {
+      const dialog = getDialogById(data.dialogId);
+      if (!dialog) {
+        return;
+      }
+      dialog.isAllMessagesReceived = data.isAllMessagesReceived;
+      dialog.messageList = [...data.messageList, ...dialog.messageList];
     }
 
     const onCreateDialog = (data: IDialog): void => {
@@ -112,6 +144,7 @@ export default defineComponent({
         if (dialog) {
           dialog._id = data._id;
           dialog.messageList = data.messageList;
+          isActiveDialog(dialog._id as string) && clearMessageText();
           return;
         }
         dialogList.value.push(data);
@@ -119,14 +152,6 @@ export default defineComponent({
       }
       //FIXME: group logic
     }
-
-    // const getMessages = async (dialogId: string, start: number, end: number): Promise<void> => {
-    //   const wrapper: ISocketWrapper<{ start: number, end: number }> = {
-    //     queue: getQueue(),
-    //     data: {start, end}
-    //   }
-    //   socket.emit(ESocketEvents.GetMessages, wrapper);
-    // }
 
     socket.on(ESocketEvents.Init, (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }) => {
       init(data);
@@ -140,11 +165,11 @@ export default defineComponent({
       dialogList,
       userList,
       activeDialog,
+      messageText,
       sendMessage,
       deselectDialog,
-      onSendMessage,
       onSelectDialog,
-      loadMessages
+      loadMessageList
     }
   }
 })
