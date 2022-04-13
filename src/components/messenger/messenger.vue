@@ -16,8 +16,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onBeforeMount, ref} from 'vue';
-import initSocket, {socket} from "@/api/messenger.api";
+import {defineComponent, onBeforeMount, onBeforeUnmount, ref} from 'vue';
+import {socket, initSocket, killSocket} from "@/api/messenger.api";
 import DialogList from '@/components/messenger/dialog-list.vue';
 import {
   ESocketEvents,
@@ -41,7 +41,7 @@ export default defineComponent({
     const activeDialog = ref<IDialog | undefined>();
     const messageText = ref<string>('');
 
-    const init = (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }): void => {
+    const onInit = (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }): void => {
       userList.value = data.userList;
       dialogList.value = data.userList.map(({login, name}) => {
         const dialog = data.dialogList.find((
@@ -140,7 +140,7 @@ export default defineComponent({
 
     const onCreateDialog = (data: IDialog): void => {
       if (!data.isGroup) {
-        const dialog = dialogList.value.find((dialog) => dialog.participantLoginList.includes(dialog.login) || data.participantLoginList.includes(dialog.login));
+        const dialog = dialogList.value.find((dialog) => dialog.participantLoginList.includes(data.login) || data.participantLoginList.includes(dialog.login));
         if (dialog) {
           dialog._id = data._id;
           dialog.messageList = data.messageList;
@@ -153,12 +153,17 @@ export default defineComponent({
       //FIXME: group logic
     }
 
-    socket.on(ESocketEvents.Init, (data: { userList: IUserPublic[], dialogList: ISourceDialog[] }) => {
-      init(data);
+    onBeforeMount(() => {
+      socket.on(ESocketEvents.Init, onInit);
+      initSocket();
     })
 
-    onBeforeMount(() => {
-      initSocket();
+    onBeforeUnmount(() => {
+      socket.off(ESocketEvents.Message, onGetMessage);
+      socket.off(ESocketEvents.DialogCreate, onCreateDialog);
+      socket.off(ESocketEvents.GetMessageList, onGetMessageList);
+      socket.off(ESocketEvents.Init, onInit);
+      killSocket();
     })
 
     return {

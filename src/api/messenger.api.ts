@@ -11,7 +11,7 @@ export const socket = io(`ws://localhost:3000`, {
   }
 });
 
-const initSocket = (): void => {
+export const initSocket = (): void => {
   socket.auth = {
     token: cookies.getCookie(process.env.VUE_APP_TOKEN_NAME),
     login: store.getters["userModule/userData"]?.login
@@ -19,5 +19,6 @@ const initSocket = (): void => {
   socket.connect();
 }
 
-export default initSocket;
-
+export const killSocket = (): void => {
+  socket.disconnect();
+}
