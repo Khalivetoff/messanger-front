@@ -6,7 +6,9 @@
           Соглашение)
         </h5>
       </q-card-section>
-      <q-card-section v-html="agreements" />
+      <q-card-section>
+        <div ref="agreementsWrapperRef" />
+      </q-card-section>
       <q-card-section>
         <div class="row">
           <q-space />
@@ -23,23 +25,27 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onBeforeMount, ref} from "vue";
+import {defineComponent, onMounted, shallowRef} from "vue";
 import {useDialogPluginComponent} from "quasar";
 import {getAgreements} from "@/api/agreements.api";
+import errorNotify from "@/utils/notificator.util";
 
 export default defineComponent({
   name: 'AgreementsDialog',
   setup() {
+    const agreementsWrapperRef = shallowRef<HTMLElement>();
     const { dialogRef, onDialogCancel } = useDialogPluginComponent();
 
-    const agreements = ref<string>('');
-
-    onBeforeMount(async () => {
-      agreements.value = await getAgreements();
+    onMounted(async () => {
+      try {
+        (agreementsWrapperRef.value as HTMLElement).innerHTML = await getAgreements();
+      } catch (e) {
+        errorNotify(e);
+      }
     })
 
     return {
-      agreements,
+      agreementsWrapperRef,
       dialogRef,
       onDialogCancel
     }
