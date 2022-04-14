@@ -14,19 +14,25 @@
           <q-input
             v-model="registerData.name"
             label="Имя"
-            :rules="[e => !!e || '']"
+            :rules="nameRules"
           />
           <q-input
             v-model="registerData.login"
             label="Логин"
-            :rules="[e => !!e || '']"
+            :rules="loginRules"
           />
           <q-input
             v-model="registerData.password"
             label="Пароль"
             type="password"
-            :rules="[e => !!e || '']"
+            :rules="passwordRules"
           />
+          <q-checkbox v-model="isAgreementsAccepted">
+            Принимаю <span
+              class="text-primary"
+              @click.stop="openAgreementsDialog"
+            >соглашение</span>
+          </q-checkbox>
           <div class="d-flex row justify-between">
             <q-btn
               label="авторизоваться"
@@ -40,6 +46,7 @@
               label="register"
               type="submit"
               :loading="isLoading"
+              :disable="!isAgreementsAccepted"
               color="primary"
             />
           </div>
@@ -54,18 +61,24 @@ import { defineComponent, reactive, ref } from 'vue';
 import { registerUser } from '@/api/user.api';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import {useQuasar} from "quasar";
+import AgreementsDialog from '@/components/agreements-dialog.vue';
+import {LOGIN_RULES, NAME_RULES, PASSWORD_RULES} from "@/constants/auth.const";
 
 export default defineComponent({
   name: 'Register',
   setup() {
     const $router = useRouter();
     const $store = useStore();
+    const $quasar = useQuasar();
 
     const registerData = reactive({
       login: '',
       password: '',
       name: ''
     });
+
+    const isAgreementsAccepted = ref(false);
 
     const isLoading = ref(false);
 
@@ -83,9 +96,20 @@ export default defineComponent({
       $router.push({ name: 'Login' });
     };
 
+    const openAgreementsDialog = (): void => {
+      $quasar.dialog({
+        component: AgreementsDialog
+      })
+    }
+
     return {
       registerData,
       isLoading,
+      isAgreementsAccepted,
+      loginRules: LOGIN_RULES,
+      passwordRules: PASSWORD_RULES,
+      nameRules: NAME_RULES,
+      openAgreementsDialog,
       goToRegister,
       authorize
     };

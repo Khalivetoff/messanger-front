@@ -1,19 +1,21 @@
 <template>
   <div
     ref="messagesWrapperRef"
-    class="messages-wrapper relative-position no-wrap column items-start"
+    class="messages-wrapper relative-position no-wrap column"
   >
     <load-messages-detector
       :is-disabled="activeDialog.isLoading"
       @on-trigger="loadMessageList"
     />
     <messages-loading :is-loading="activeDialog.isLoading" />
-    <message-item
-      v-for="(message, index) in messageList"
-      :ref="(el) => messagesRefs[index] = el?.$el"
-      :key="message._id"
-      :message="message"
-    />
+    <div class="messages-line column justify-end items-start">
+      <message-item
+        v-for="(message, index) in messageList"
+        :ref="(el) => messagesRefs[index] = el?.$el"
+        :key="message._id"
+        :message="message"
+      />
+    </div>
   </div>
 </template>
 
@@ -108,8 +110,12 @@ export default defineComponent({
     align-self: end;
   }
 
-  .message {
-    max-width: 85%;
+  .messages-line {
+    flex: 1;
+
+    .message {
+      max-width: 85%;
+    }
   }
 }
 </style>

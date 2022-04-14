@@ -14,13 +14,13 @@
           <q-input
             v-model="authData.login"
             label="Логин"
-            :rules="[e => !!e || '']"
+            :rules="loginRules"
           />
           <q-input
             v-model="authData.password"
             label="Пароль"
             type="password"
-            :rules="[e => !!e || '']"
+            :rules="passwordRules"
           />
           <div class="d-flex row justify-between">
             <q-btn
@@ -49,6 +49,7 @@ import { defineComponent, reactive, ref } from 'vue';
 import { loginUser } from '@/api/user.api';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import {LOGIN_RULES, PASSWORD_RULES} from "@/constants/auth.const";
 
 export default defineComponent({
   name: 'Login',
@@ -80,6 +81,8 @@ export default defineComponent({
     return {
       authData,
       isLoading,
+      loginRules: LOGIN_RULES,
+      passwordRules: PASSWORD_RULES,
       goToRegister,
       authorize
     };
