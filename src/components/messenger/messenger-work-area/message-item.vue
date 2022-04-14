@@ -39,9 +39,9 @@ export default defineComponent({
 <style lang="scss">
 .message {
   border-radius: 8px;
-  padding: 12px 8px;
+  padding: 12px;
   background-color: #e5e5e5;
-  font-size: 14px;
+  font-size: 16px;
 
   &--by-current-user {
     background-color: #d4d8ff;

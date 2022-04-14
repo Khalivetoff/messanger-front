@@ -8,6 +8,7 @@ export interface IDialog {
   participantLoginList: string[];
   isGroup: boolean;
   isAllMessagesReceived: boolean;
+  isLoading: boolean;
 }
 
 export interface ISourceDialog {

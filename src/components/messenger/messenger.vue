@@ -16,14 +16,16 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, onBeforeMount, onBeforeUnmount, ref} from 'vue';
+import {defineComponent, onBeforeMount, onBeforeUnmount, onMounted, ref} from 'vue';
 import {socket, initSocket, killSocket} from "@/api/messenger.api";
 import DialogList from '@/components/messenger/dialog-list.vue';
 import {
   ESocketEvents,
   IAddMessageInNewDialogResponse,
   IAddMessageInDialogRequest,
-  IAddMessageInNewDialogRequest, IGetMessageListRequest, IGetMessageListResponse
+  IAddMessageInNewDialogRequest,
+  IGetMessageListRequest,
+  IGetMessageListResponse
 } from "@/models/socket";
 import {IDialog, ISourceDialog} from "@/models/messenger";
 import {IUserPublic} from "@/models/user";
@@ -57,7 +59,8 @@ export default defineComponent({
           messageList: dialog?.messageList || [],
           participantLoginList: dialog?.participantLoginList || [],
           isGroup: dialog?.isGroup || false,
-          isAllMessagesReceived: dialog ? dialog.isAllMessagesReceived : true
+          isAllMessagesReceived: dialog ? dialog.isAllMessagesReceived : true,
+          isLoading: false
         }
       })
 
@@ -67,25 +70,45 @@ export default defineComponent({
     }
 
     const onSelectDialog = (index: number): void => {
+      deselectDialog();
       clearMessageText();
       activeDialog.value = dialogList.value[index];
     }
 
     const deselectDialog = () => {
       clearMessageText();
+      deactivateDialogLoadingById((activeDialog.value as IDialog)?._id as string);
       activeDialog.value = undefined;
     }
 
-    const loadMessageList = async (): Promise<void> => {
-      if (!activeDialog.value || activeDialog.value?.isAllMessagesReceived) {
+    const activateDialogLoadingById = (dialogId: string): void => {
+      const dialog = getDialogById(dialogId);
+      if (!dialog) {
         return;
       }
-      !activeDialog.value?.isAllMessagesReceived && socket.emit(
+      dialog.isLoading = true;
+    }
+
+    const deactivateDialogLoadingById = (dialogId: string): void => {
+      const dialog = getDialogById(dialogId);
+      if (!dialog) {
+        return;
+      }
+      dialog.isLoading = false;
+    }
+
+    const loadMessageList = async (): Promise<void> => {
+      if (activeDialog.value?.isAllMessagesReceived || activeDialog.value?.isLoading) {
+        return;
+      }
+      activateDialogLoadingById((activeDialog.value as IDialog)._id as string);
+      socket.emit(
         ESocketEvents.GetMessageList,
         {
           dialogId: activeDialog.value?._id,
           messageIndex: activeDialog.value?.messageList.length
-        } as IGetMessageListRequest);
+        } as IGetMessageListRequest
+      );
     }
 
     const clearMessageText = (): void => {
@@ -136,6 +159,7 @@ export default defineComponent({
       }
       dialog.isAllMessagesReceived = data.isAllMessagesReceived;
       dialog.messageList = [...data.messageList, ...dialog.messageList];
+      deactivateDialogLoadingById(data.dialogId);
     }
 
     const onCreateDialog = (data: IDialog): void => {
@@ -164,6 +188,21 @@ export default defineComponent({
       socket.off(ESocketEvents.GetMessageList, onGetMessageList);
       socket.off(ESocketEvents.Init, onInit);
       killSocket();
+      window.removeEventListener('keydown', onKeydown);
+    })
+
+    const onKeydown = (ev: KeyboardEvent): void => {
+      switch (ev.key) {
+        case 'Escape':
+          if (activeDialog.value) {
+            deselectDialog();
+            return;
+          }
+      }
+    }
+
+    onMounted(() => {
+      window.addEventListener('keydown', onKeydown)
     })
 
     return {

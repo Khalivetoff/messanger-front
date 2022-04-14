@@ -1,9 +1,10 @@
 <template>
   <div
     ref="messagesWrapperRef"
-    class="messages-wrapper relative-position no-wrap overflow-auto column items-start"
+    class="messages-wrapper relative-position no-wrap column items-start"
   >
     <load-messages-detector @on-trigger="loadMessageList" />
+    <messages-loading :is-loading="activeDialog.isLoading" />
     <message-item
       v-for="(message, index) in messageList"
       :ref="(el) => messagesRefs[index] = el?.$el"
@@ -22,10 +23,11 @@ import {useStore} from "vuex";
 import LoadMessagesDetector
   from "@/components/messenger/messenger-work-area/load-messages-detector.vue";
 import {cloneDeep} from "lodash";
+import MessagesLoading from "@/components/messenger/messenger-work-area/messages-loading.vue";
 
 export default defineComponent({
   name: 'MessagesWrapper',
-  components: {LoadMessagesDetector, MessageItem},
+  components: {MessagesLoading, LoadMessagesDetector, MessageItem},
   props: {
     messageList: {type: Array as PropType<(IMessage & { _id: string })[]>, default: () => ([])},
     activeDialog: {type: Object as PropType<IDialog>, default: undefined}
@@ -43,8 +45,17 @@ export default defineComponent({
 
     watch(
       () => props.messageList[0]?._id,
-      () => {
-        messagesRefs.value[0]?.scrollIntoView({block: 'start'});
+      async () => {
+        if (messagesWrapperRef.value?.scrollTop) {
+          return;
+        }
+        const firstMessageElBeforeUpdate = messagesRefs.value[0];
+        if (!firstMessageElBeforeUpdate) {
+          return;
+        }
+        await nextTick();
+        firstMessageElBeforeUpdate.scrollIntoView({block: 'start'});
+        messagesWrapperRef.value?.scrollTo({top: messagesWrapperRef.value?.scrollTop - 8});
       }
     )
 
@@ -82,6 +93,7 @@ export default defineComponent({
 .messages-wrapper {
   padding: 8px 12px;
   overflow-y: scroll!important;
+  overflow-x: hidden!important;
 
   .load-messages-detector {
     width: 100%;
