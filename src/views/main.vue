@@ -23,7 +23,7 @@ import Messenger from '@/components/messenger/messenger.vue';
 import {useStore} from "vuex";
 import {IUserPublic} from "@/models/user";
 import {logoutUser} from "@/api/user.api";
-import {redirectToLoginPage} from "@/utils/router";
+import {redirectToLoginPage} from "@/utils/router.util";
 import {socket} from "@/api/messenger.api";
 import {ESocketEvents} from "@/models/socket";
 

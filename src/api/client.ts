@@ -2,7 +2,7 @@ import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import qs from 'qs';
 import {cookies} from '@/utils/cookies.util';
 import errorNotify from '@/utils/notificator.util';
-import {redirectToLoginPage} from '@/utils/router';
+import {redirectToLoginPage} from '@/utils/router.util';
 
 const axiosConfigs: AxiosRequestConfig = {
   timeout: 600000,
