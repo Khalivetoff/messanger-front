@@ -1,5 +1,8 @@
 <template>
-  <div class="messenger overflow-hidden no-wrap flex row">
+  <div
+    class="messenger overflow-hidden relative-position no-wrap flex row"
+    :class="{'messenger--have-active-dialog': activeDialog}"
+  >
     <dialog-list
       :dialog-list="dialogList"
       :active-dialog="activeDialog"
@@ -222,15 +225,36 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@import "@/styles/default.scss";
+
 .messenger {
 
   .dialog-list {
     width: 30%;
+
+    @media (max-width: $mobile-resolution) {
+      width: 100%;
+    }
   }
 
   .messenger-work-area {
     flex-grow: 1;
     flex-shrink: 0;
+    background-color: #ffffff;
+
+    @media (max-width: $mobile-resolution) {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      z-index: 1;
+      display: none;
+    }
+  }
+
+  &--have-active-dialog {
+    .messenger-work-area {
+      display: flex;
+    }
   }
 }
 </style>

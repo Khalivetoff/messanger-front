@@ -32,7 +32,7 @@ export default defineComponent({
   name: 'MessagesWrapper',
   components: {MessagesLoading, LoadMessagesDetector, MessageItem},
   props: {
-    messageList: {type: Array as PropType<(IMessage & { _id: string })[]>, default: () => ([])},
+    messageList: {type: Array as PropType<IMessage[]>, default: () => ([])},
     activeDialog: {type: Object as PropType<IDialog>, default: undefined}
   },
   emits: ['loadMessages'],
@@ -48,7 +48,7 @@ export default defineComponent({
 
     watch(
       () => props.messageList[0]?._id,
-      () => {
+      async () => {
         if (!props.activeDialog?.isLoading || messagesWrapperRef.value?.scrollTop) {
           return;
         }
@@ -56,13 +56,14 @@ export default defineComponent({
         if (!firstMessageElBeforeUpdate) {
           return;
         }
+        await nextTick();
         firstMessageElBeforeUpdate.scrollIntoView({block: 'start'});
         messagesWrapperRef.value?.scrollTo({top: messagesWrapperRef.value?.scrollTop - 8});
       }
     )
 
-    const lastMessageByCurrentUser = computed<IMessage & { _id: string } | undefined>(() => (
-      (cloneDeep(props.messageList) as (IMessage & { _id: string })[] | undefined)?.reverse().find(({senderLogin}) => senderLogin === $store.getters['userModule/userData']?.login)
+    const lastMessageByCurrentUser = computed<IMessage | undefined>(() => (
+      (cloneDeep(props.messageList) as IMessage[] | undefined)?.reverse().find(({senderLogin}) => senderLogin === $store.getters['userModule/userData']?.login)
     ));
 
     watch(

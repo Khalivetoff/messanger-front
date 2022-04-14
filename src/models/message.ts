@@ -3,4 +3,5 @@ export interface IMessage {
   isDelivered: boolean;
   text: string;
   senderLogin: string;
+  _id?: string;
 }
