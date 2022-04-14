@@ -3,7 +3,10 @@
     ref="messagesWrapperRef"
     class="messages-wrapper relative-position no-wrap column items-start"
   >
-    <load-messages-detector @on-trigger="loadMessageList" />
+    <load-messages-detector
+      :is-disabled="activeDialog.isLoading"
+      @on-trigger="loadMessageList"
+    />
     <messages-loading :is-loading="activeDialog.isLoading" />
     <message-item
       v-for="(message, index) in messageList"
@@ -45,15 +48,14 @@ export default defineComponent({
 
     watch(
       () => props.messageList[0]?._id,
-      async () => {
-        if (messagesWrapperRef.value?.scrollTop) {
+      () => {
+        if (!props.activeDialog?.isLoading || messagesWrapperRef.value?.scrollTop) {
           return;
         }
         const firstMessageElBeforeUpdate = messagesRefs.value[0];
         if (!firstMessageElBeforeUpdate) {
           return;
         }
-        await nextTick();
         firstMessageElBeforeUpdate.scrollIntoView({block: 'start'});
         messagesWrapperRef.value?.scrollTo({top: messagesWrapperRef.value?.scrollTop - 8});
       }

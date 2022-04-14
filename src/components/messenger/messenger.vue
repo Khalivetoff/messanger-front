@@ -159,7 +159,9 @@ export default defineComponent({
       }
       dialog.isAllMessagesReceived = data.isAllMessagesReceived;
       dialog.messageList = [...data.messageList, ...dialog.messageList];
-      deactivateDialogLoadingById(data.dialogId);
+      setTimeout(() => {
+        deactivateDialogLoadingById(data.dialogId);
+      })
     }
 
     const onCreateDialog = (data: IDialog): void => {
