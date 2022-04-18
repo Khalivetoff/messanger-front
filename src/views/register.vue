@@ -8,8 +8,8 @@
         <q-form
           greedy
           class="q-gutter-md"
-          @submit="authorize"
-          @reset="goToRegister"
+          @submit="register"
+          @reset="goToLogin"
         >
           <q-input
             v-model="registerData.name"
@@ -82,7 +82,7 @@ export default defineComponent({
 
     const isLoading = ref(false);
 
-    const authorize = async (): Promise<void> => {
+    const register = async (): Promise<void> => {
       try {
         isLoading.value = true;
         $store.commit('userModule/setUserData', await registerUser(registerData));
@@ -92,7 +92,7 @@ export default defineComponent({
       }
     };
 
-    const goToRegister = (): void => {
+    const goToLogin = (): void => {
       $router.push({ name: 'Login' });
     };
 
@@ -110,8 +110,8 @@ export default defineComponent({
       passwordRules: PASSWORD_RULES,
       nameRules: NAME_RULES,
       openAgreementsDialog,
-      goToRegister,
-      authorize
+      goToLogin,
+      register
     };
   }
 });
