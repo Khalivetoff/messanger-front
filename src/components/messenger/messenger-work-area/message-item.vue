@@ -41,7 +41,7 @@ export default defineComponent({
   border-radius: 8px;
   padding: 12px;
   background-color: #e5e5e5;
-  font-size: 16px;
+  font-size: 17px;
 
   &--by-current-user {
     background-color: #d4d8ff;
@@ -54,7 +54,7 @@ export default defineComponent({
   .message__time {
     right: 12px;
     bottom: 12px;
-    font-size: 8px;
+    font-size: 10px;
     white-space: nowrap;
     text-align: right;
   }
