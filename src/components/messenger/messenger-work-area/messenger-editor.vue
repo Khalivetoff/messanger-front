@@ -1,8 +1,12 @@
 <template>
   <div class="messenger-editor flex row items-center">
-    <textarea
+    <q-input
       ref="textareaRef"
       v-model="internalMessageText"
+      outlined
+      type="textarea"
+      autogrow
+      dense
       placeholder="Введи сообщение"
       @keydown.enter.exact.prevent="sendMessage"
     />
@@ -68,17 +72,19 @@ export default defineComponent({
 
 <style lang="scss">
 .messenger-editor {
-  textarea {
-    flex: 1;
-    resize: none;
-    padding: 8px;
-    outline: none;
-    border: solid 1px #d9d9d9;
-    border-radius: 6px;
-    transition: 150ms;
 
-    &:focus {
-      border-color: #bdbdbd;
+  .q-field {
+    max-height: 100%;
+    flex: 1;
+
+    .q-field__control {
+      max-height: 100%;
+      padding: 0px 1px;
+
+      textarea {
+        max-height: 100%;
+        padding: 12px;
+      }
     }
   }
 

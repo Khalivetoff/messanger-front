@@ -97,7 +97,7 @@ export default defineComponent({
 
   .messenger-editor {
     flex: 0;
-    min-height: 80px;
+    max-height: 16vh;
     margin: 12px;
   }
 }

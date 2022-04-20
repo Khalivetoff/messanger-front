@@ -7,22 +7,25 @@
         </h4>
         <q-form
           greedy
-          class="q-gutter-md"
+          class="q-gutter-md q-mt-lg"
           @submit="register"
           @reset="goToLogin"
         >
           <q-input
             v-model="registerData.name"
+            outlined
             label="Имя"
             :rules="nameRules"
           />
           <q-input
             v-model="registerData.login"
+            outlined
             label="Логин"
             :rules="loginRules"
           />
           <q-input
             v-model="registerData.password"
+            outlined
             label="Пароль"
             type="password"
             :rules="passwordRules"
@@ -33,6 +36,7 @@
               @click.stop="openAgreementsDialog"
             >соглашение</span>
           </q-checkbox>
+          <antispam ref="antispamRef" />
           <div class="d-flex row justify-between">
             <q-btn
               label="авторизоваться"
@@ -46,7 +50,6 @@
               label="register"
               type="submit"
               :loading="isLoading"
-              :disable="!isAgreementsAccepted"
               color="primary"
             />
           </div>
@@ -64,9 +67,13 @@ import { useStore } from 'vuex';
 import {useQuasar} from "quasar";
 import AgreementsDialog from '@/components/agreements-dialog.vue';
 import {LOGIN_RULES, NAME_RULES, PASSWORD_RULES} from "@/constants/auth.const";
+import errorNotify from "@/utils/notificator.util";
+import useAntispam from "@/utils/use-antispam.util";
+import Antispam from '@/components/antispam.vue';
 
 export default defineComponent({
   name: 'Register',
+  components: {Antispam},
   setup() {
     const $router = useRouter();
     const $store = useStore();
@@ -82,12 +89,19 @@ export default defineComponent({
 
     const isLoading = ref(false);
 
+    const {antispamRef, updateAntispam} = useAntispam();
+
     const register = async (): Promise<void> => {
+      if (!isAgreementsAccepted.value) {
+        errorNotify('Необходимо подтвердить прочтение соглашения');
+        return;
+      }
       try {
         isLoading.value = true;
         $store.commit('userModule/setUserData', await registerUser(registerData));
         await $router.push({ name: 'Main' });
       } finally {
+        updateAntispam();
         isLoading.value = false;
       }
     };
@@ -109,6 +123,7 @@ export default defineComponent({
       loginRules: LOGIN_RULES,
       passwordRules: PASSWORD_RULES,
       nameRules: NAME_RULES,
+      antispamRef,
       openAgreementsDialog,
       goToLogin,
       register

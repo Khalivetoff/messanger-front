@@ -34,7 +34,7 @@ export default defineComponent({
   name: 'AgreementsDialog',
   setup() {
     const agreementsWrapperRef = shallowRef<HTMLElement>();
-    const { dialogRef, onDialogCancel } = useDialogPluginComponent();
+    const {dialogRef, onDialogCancel} = useDialogPluginComponent();
 
     onMounted(async () => {
       try {

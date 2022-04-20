@@ -41,7 +41,7 @@ export default defineComponent({
   border-radius: 8px;
   padding: 12px;
   background-color: #e5e5e5;
-  font-size: 17px;
+  font-size: 14px;
 
   &--by-current-user {
     background-color: #d4d8ff;

@@ -3,7 +3,7 @@
     <dialog-list-item
       v-for="(dialog, index) in dialogList"
       :key="index"
-      v-ripple
+      v-ripple:indigo-3.early
       :dialog="dialog"
       class="relative-position"
       :class="{'dialog-list-item--active': isActiveDialog(dialog)}"
