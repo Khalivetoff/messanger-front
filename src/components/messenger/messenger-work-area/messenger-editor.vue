@@ -1,15 +1,15 @@
 <template>
   <div class="messenger-editor flex row items-center">
-    <q-input
-      ref="textareaRef"
-      v-model="internalMessageText"
+    <q-field
+      class="flex"
       outlined
-      type="textarea"
-      autogrow
-      dense
-      placeholder="Введи сообщение"
-      @keydown.enter.exact.prevent="sendMessage"
-    />
+    >
+      <text-editor
+        ref="textEditor"
+        v-model="internalMessageText"
+        @on-enter="sendMessage"
+      />
+    </q-field>
     <q-btn
       round
       size="sm"
@@ -23,16 +23,19 @@
 <script lang="ts">
 import {computed, defineComponent, onMounted, PropType, shallowRef, watch} from "vue";
 import {IDialog} from "@/models/messenger";
+import TextEditor from '@/components/messenger/text-editor.vue';
+import {ITextEditor} from "@/models/text-editor";
 
 export default defineComponent({
   name: 'MessengerEditor',
+  components: {TextEditor},
   props: {
     activeDialog: {type: Object as PropType<IDialog>, default: undefined},
     modelValue: {type: String as PropType<string>, default: ''}
   },
   emits: ['update:modelValue', 'sendMessage'],
   setup(props, {emit}) {
-    const textareaRef = shallowRef<HTMLElement>();
+    const textEditor = shallowRef<ITextEditor>();
 
     const internalMessageText = computed({
       get() {
@@ -54,7 +57,7 @@ export default defineComponent({
     }
 
     const focusTextField = (): void => {
-      textareaRef.value?.focus();
+      textEditor.value?.focus();
     }
 
     onMounted(() => {
@@ -63,7 +66,7 @@ export default defineComponent({
 
     return {
       internalMessageText,
-      textareaRef,
+      textEditor,
       sendMessage
     }
   }
@@ -81,9 +84,13 @@ export default defineComponent({
       max-height: 100%;
       padding: 0px 1px;
 
-      textarea {
-        max-height: 100%;
-        padding: 12px;
+      .text-editor {
+        width: 100%;
+        border: none;
+
+        .ProseMirror {
+          padding: 8px;
+        }
       }
     }
   }

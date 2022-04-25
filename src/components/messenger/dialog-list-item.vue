@@ -5,7 +5,7 @@
     </span>
     <div
       v-if="lastMessage"
-      class="dialog-list-item__last-message"
+      class="dialog-list-item__last-message flex row no-wrap"
     >
       <span
         v-show="isLastMessageByCurrentUser"
@@ -13,13 +13,16 @@
       >
         ты:
       </span>
-      {{ lastMessage?.text }}
+      <div
+        ref="lastMessageTextRef"
+        class="dialog-list-item__last-message-text"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from "vue";
+import {computed, defineComponent, onMounted, PropType, shallowRef, watch} from "vue";
 import {IDialog} from "@/models/messenger";
 import {IMessage} from "@/models/message";
 import {useStore} from "vuex";
@@ -31,12 +34,30 @@ export default defineComponent({
   },
   setup(props) {
     const $store = useStore();
+    const lastMessageTextRef = shallowRef<HTMLElement>();
     const lastMessage = computed<IMessage | undefined>(() => props.dialog?.messageList?.[props.dialog?.messageList.length - 1]);
-
     const isLastMessageByCurrentUser = computed<boolean>(() => lastMessage.value?.senderLogin === $store.getters['userModule/userData']?.login);
+    const lastMessageText = computed<string>(() => lastMessage?.value?.text || '');
+
+    const setLastMessageTextContent = (content: string | undefined): void => {
+      if (!lastMessageTextRef.value || !content) {
+        return;
+      }
+      lastMessageTextRef.value.innerHTML = content;
+    }
+
+    watch(
+      () => lastMessageText.value,
+      (val: string | undefined) => setLastMessageTextContent(val)
+    )
+
+    onMounted(() => {
+      setLastMessageTextContent(lastMessageText.value);
+    })
 
     return {
       lastMessage,
+      lastMessageTextRef,
       isLastMessageByCurrentUser
     }
   }
@@ -58,11 +79,21 @@ export default defineComponent({
   }
 
   &__last-message {
-    font-size: 14px;
-    overflow: hidden;
-    text-overflow: ellipsis;
     max-width: 100%;
-    white-space: nowrap;
+
+    &-text {
+      height: 20px;
+      overflow: hidden;
+      font-size: 14px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      p {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
   }
 
   &__message-by-current-user {

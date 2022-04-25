@@ -3,13 +3,16 @@
     class="message column"
     :class="{'message--by-current-user': isCurrentUser}"
   >
-    <span class="message__text">{{ message.text }}</span>
+    <span
+      ref="messageTextRef"
+      class="message__text"
+    />
     <span class="message__time">{{ parsedTime }}</span>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from "vue";
+import {computed, defineComponent, onMounted, PropType, shallowRef, watch} from "vue";
 import {IMessage} from "@/models/message";
 import {useStore} from "vuex";
 import moment from "moment";
@@ -24,11 +27,29 @@ export default defineComponent({
   },
   setup(props) {
     const $store = useStore();
+    const messageTextRef = shallowRef<HTMLElement>();
     const isCurrentUser = props.message?.senderLogin === $store.getters['userModule/userData'].login;
+
+    const setMessageTextContent = (content: string | undefined): void => {
+      if (!messageTextRef.value || !content) {
+        return;
+      }
+      messageTextRef.value.innerHTML = content;
+    }
 
     const parsedTime = computed(() => moment(props.message?.sendTime).locale('ru').format('lll'));
 
+    watch(
+      () => props.message,
+      (value: undefined | IMessage) => setMessageTextContent(value?.text)
+    )
+
+    onMounted(() => {
+      setMessageTextContent(props.message?.text);
+    })
+
     return {
+      messageTextRef,
       isCurrentUser,
       parsedTime
     }
@@ -51,12 +72,13 @@ export default defineComponent({
     margin-bottom: 8px;
   }
 
-  .message__time {
+  &__time {
     right: 12px;
     bottom: 12px;
     font-size: 10px;
     white-space: nowrap;
     text-align: right;
+    margin-top: 8px;
   }
 }
 </style>
