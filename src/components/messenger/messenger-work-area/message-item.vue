@@ -78,7 +78,6 @@ export default defineComponent({
     font-size: 10px;
     white-space: nowrap;
     text-align: right;
-    margin-top: 8px;
   }
 }
 </style>

@@ -119,11 +119,12 @@ export default defineComponent({
     }
 
     const sendMessage = async (): Promise<void> => {
+      const parsedMessageText = messageText.value.replaceAll(/(^<p>)(<br>)+/gm, '<p>').replaceAll(/(<br>){3,}/g, '<br><br>');
       if (activeDialog.value?._id) {
-        await sendMessageToDialog(activeDialog.value?._id as string, messageText.value);
+        await sendMessageToDialog(activeDialog.value?._id as string, parsedMessageText);
         return;
       }
-      await sendMessageToCompanion(activeDialog.value?.login as string, messageText.value);
+      await sendMessageToCompanion(activeDialog.value?.login as string, parsedMessageText);
     }
 
     const sendMessageToCompanion = async (companionLogin: string, text: string): Promise<void> => {
