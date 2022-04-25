@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 import {cookies} from "@/utils/cookies.util";
 import store from "@/store";
 
-export const socket = io(`ws://localhost:3000`, {
+export const socket = io(`ws://${process.env.VUE_APP_SOCKET_ADDRESS}`, {
   reconnectionDelayMax: 10000,
   autoConnect: false,
   withCredentials: true,
